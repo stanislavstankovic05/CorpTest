@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="lab1" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output="bin/Debug/lab1" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+				</Compiler>
+			</Target>
+			<Target title="Release">
+				<Option output="bin/Release/lab1" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+			<Add option="-fexceptions" />
+		</Compiler>
+		<Unit filename="1.in" />
+		<Unit filename="2.in" />
+		<Unit filename="3.in" />
+		<Unit filename="4.in" />
+		<Unit filename="5.in" />
+		<Unit filename="6.in" />
+		<Unit filename="7.in" />
+		<Unit filename="8.in" />
+		<Unit filename="9.in" />
+		<Unit filename="ComplexGroup.h" />
+		<Unit filename="Corp.h" />
+		<Unit filename="NrComplex.h" />
+		<Unit filename="RationalGroup.h" />
+		<Unit filename="RealCorp.h" />
+		<Unit filename="Untitled5" />
+		<Unit filename="Untitled6" />
+		<Unit filename="ZnCorp.h" />
+		<Unit filename="display.h" />
+		<Unit filename="main.cpp" />
+		<Unit filename="monoid.h" />
+		<Unit filename="output.out" />
+		<Unit filename="ring.h" />
+		<Unit filename="test.in" />
+		<Unit filename="test2.in" />
+		<Unit filename="test3" />
+		<Unit filename="test4.in" />
+		<Unit filename="test_add.in" />
+		<Extensions>
+			<code_completion />
+			<envvars />
+			<debugger />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>
