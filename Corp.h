@@ -13,7 +13,44 @@ public:
     {
         //cout<<"destruct";
     }
-    Ring operator=(Ring &b)
+    Corp(Ring &b)//vezi aici
+    {
+        int card,type;
+        card=b.getCardinal();
+        int **table1;
+        table1 = new int*[card+1];
+        for(int i=1;i<=card;++i)
+        {
+            table1[i]=new int[card+1];
+        }
+        b.getMonoid1(card,type,table1);
+        int **table2;
+        table2 = new int*[card+1];
+        for(int i=1;i<=card;++i)
+        {
+            table2[i]=new int[card+1];
+        }
+        b.getMonoid2(table2);
+
+        string *elements=new string[card+1];
+
+        if(b.getNume().substr(0,2)!="Z/")
+            b.getElements(card,elements);
+        setCardinal(card);
+        setNume(b.getNume());
+        setElements(elements,card);
+        setOpTable(table1,table2,card);
+        setType(0);
+        for (int i = 0; i <=card; ++i)
+                    {
+                        delete[] table1[i];
+                        delete[] table2[i];
+                    }
+                    delete[] table1;
+                    delete[] table2;
+
+    }
+    Corp operator=(Corp &b)
     {
         int card,type;
         card=b.getCardinal();
@@ -51,7 +88,6 @@ public:
                     table1 = 0;
                     table2 = 0;
     }
-
     bool operator==(Corp &b)
     {
         int card=getCardinal();
@@ -100,10 +136,13 @@ public:
             }
             int tip=getType();
             getMonoid1(card,tip,tableA1);
+            cout<<"oke0.1\n";
             getMonoid2(tableA2);
+            cout<<"oke1\n";
             b.getMonoid1(card,tip,tableB1);
             b.getMonoid2(tableB2);
 
+            cout<<"oke2\n";
             if(card!=b.getCardinal())
             {
                 cout<<"Corpurile nu sunt izomorfe2";
@@ -130,6 +169,7 @@ public:
                         break;
                     }
                 }
+                cout<<"oke2\n";
             }
             if (tableA1 != 0)
             {
@@ -192,6 +232,10 @@ public:
         else
             return 1;
     }
+    void TestCast()
+	{
+	    cout<<getNume()<<" este Corp\n";
+	}
 };
 
 

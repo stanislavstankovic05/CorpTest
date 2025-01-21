@@ -4,13 +4,13 @@
 #include <typeinfo>
 #include <sstream>
 #include "ring.h"
-#include "display.h"
+#include "Interface.h"
 #include "Corp.h"
 #include "ZnCorp.h"
 #include "RealCorp.h"
 #include "RationalGroup.h"
 #include "ComplexGroup.h"
-
+#include "StructuraAlgebrica.h"
 #define upkey 72
 #define downkey 80
 #define enterkey 13
@@ -21,31 +21,7 @@ using namespace std;
 
 
 
-bool prim(int x)
-{
-    int d;
-    if (x < 2)
-    {
-        return 0;
-    }
-    if (x == 2)
-    {
-        return 1;
-    }
-    if (x % 2 == 0)
-    {
-        return 0;
-    }
-    for (d = 3; d * d <= x; d += 2)
-    {
-        if (x % d == 0)
-        {
-            return 0;
-        }
-    }
-    return 1;
-}
-
+void interogationMenu(int option, Ring **ring,int nr_ring);
 void openFileInput();
 void ConsoleInput();
 void tutorialInput(int optionSelected);
@@ -71,20 +47,13 @@ void redirection_Menu(int optionSelected)
     }
 }
 
-void testCorp(Ring ring[],int nr_ring, Corp corp[], int nr_corp)
+void testCorp(Ring **ring,int nr_ring)
 {
-    if (nr_corp==0)
-    {
-        cout<<"Multimile cu legile de compozitie date nu formeaza o structura de corp \n";
-        //return;
-    }
-    else
-    {
-        cout<<"Selecteaza inelul pe care vrei sa il testati:\n";
+    cout<<"Selecteaza inelul pe care vrei sa il testati:\n";
         //cout<<nr_corp<<"\n";
         for(int i=1;i<=nr_ring;++i)
         {
-            cout<<ring[i].getNume()<<" ";
+            cout<<ring[i]->getNume()<<" ";
         }
         /*for(int i=1;i<=nr_corp;++i)
         {
@@ -94,714 +63,971 @@ void testCorp(Ring ring[],int nr_ring, Corp corp[], int nr_corp)
         string choice;
         cin>>choice;
         int index=0;
-        for(int i=1;i<=nr_ring;++i)
+        try
         {
-            if(ring[i].getNume()==choice)
+            for(int i=1;i<=nr_ring;++i)
             {
-                index=i;
-                break;
+                if(ring[i]->getNume()==choice)
+                {
+                    index=i;
+                    break;
+                }
             }
-        }
-        if(index==0)
+            if(index==0)
+            {
+                throw 0;
+            }
+        }catch(int num)
         {
             cout<<"Invalid input";
-            return;
+            interogationMenu(0,ring,nr_ring);
         }
-        else
+        if(ring[index]->getNume().substr(0,2)=="Z/")
         {
-            bool found=0;
-            for(int i=1;i<=nr_corp;++i)
-            {
-                if(corp[i].getNume()==ring[index].getNume())
-                {
-                    found=1;
-                    break;
-                }
-            }
-            /*if(ring[index].testCorp()==1)
-                cout<<"Este corp";
-            else
-                cout<<"Nu este corp";*/
-            if(found==1)
-                cout<<"Este corp";
-            else
-                cout<<"Nu este corp";
-        }
-
-    }
-}
-void addition(Ring ring[],int nr_ring, Corp corp[], int nr_corp, RationalGroup rationalCorp, ComplexCorp complexCorp, RealGroup realCorp, ZnCorp znCorp[],int nr_Zn)
-{
-    cout<<"Selecteaza inelul pe care vrei sa il testati:\n";
-    //cout<<nr_corp<<"\n";
-    for(int i=1;i<=nr_corp;++i)
-    {
-        cout<<corp[i].getNume()<<" ";
-    }
-    cout<<"\n";
-    string choice;
-    cin>>choice;
-    int index=0;
-    for(int i=1;i<=nr_corp;++i)
-    {
-        if(corp[i].getNume()==choice)
-            index=i;
-    }
-    if(index==0)
-    {
-        cout<<"Invalid input";
-    }
-    else
-    {
-        //cout<<corp[index].getType()<<" ";
-        if(corp[index].getNume()=="Q")
-        {
-            double a,b;
-            cin>>a>>b;
-            rationalCorp.additionOperation(a,b);
-        }
-        if(corp[index].getNume()=="R")
-        {
-                double a,b;
-                cin>>a>>b;
-                realCorp.additionOperation(a,b);
-        }
-        else if(corp[index].getNume()=="C")
-        {
-            Nrcomplex a,b;
-            cin>>a>>b;
-            complexCorp.additionOperation(a,b);
-        }
-        else if(corp[index].getNume().substr(0,2)=="Z/")
-        {
-            int indexZ=0;
-            for(int i=1;i<=nr_Zn;++i)
-            {
-                if(znCorp[i].getNume()==corp[index].getNume())
-                {
-                    indexZ=i;
-                    break;
-                }
-            }
-            int a,b;
-            cin>>a>>b;
-            znCorp[indexZ].additionOperation(a,b);
-        }
-        else if(corp[index].getType()==0)
-        {
-            cout<<"Selecteaza elementele pentru operatia de adunare:\n";
-            int card=corp[index].getCardinal();
-            string *elements=new string[card+1];
-
-            corp[index].getElements(card,elements);
-
+            cout<<ring[index]->getCardinal()<<"\n";
+            string nume=ring[index]->getNume();
+            int card=ring[index]->getCardinal();
+            int **table=new int*[card+1];
             for(int i=1;i<=card;++i)
-                cout<<elements[i]<<" ";
-            cout<<"\n";
-            string a,b;
-            cin>>a>>b;
-            cout<<corp[index].additionOperation(a,b)<<"\n";
-        }
-    }
-}
-void multiply(Ring ring[],int nr_ring, Corp corp[], int nr_corp, RationalGroup rationalCorp, ComplexCorp complexCorp, RealGroup realCorp, ZnCorp znCorp[],int nr_Zn)
-{
-    cout<<"Selecteaza inelul pe care vrei sa il testati:\n";
-    //cout<<nr_corp<<"\n";
-    for(int i=1;i<=nr_corp;++i)
-    {
-        cout<<corp[i].getNume()<<" ";
-    }
-    cout<<"\n";
-    string choice;
-    cin>>choice;
-    int index=0;
-    for(int i=1;i<=nr_corp;++i)
-    {
-        if(corp[i].getNume()==choice)
-            index=i;
-    }
-    if(index==0)
-    {
-        cout<<"Invalid input";
-    }
-    else
-    {
-        if(corp[index].getNume()=="Q")
-        {
-            double a,b;
-            cin>>a>>b;
-            rationalCorp.multiplyOperation(a,b);
-        }
-        if(corp[index].getNume()=="R")
-        {
-                double a,b;
-                cin>>a>>b;
-                realCorp.multiplyOperation(a,b);
-        }
-        else if(corp[index].getNume()=="C")
-        {
-            Nrcomplex a,b;
-            cin>>a>>b;
-            complexCorp.multiplyOperation(a,b);
-        }
-        else if(corp[index].getNume().substr(0,2)=="Z/")
-        {
-            int indexZ=0;
-            for(int i=1;i<=nr_Zn;++i)
             {
-                if(znCorp[i].getNume()==corp[index].getNume())
-                {
-                    indexZ=i;
-                    break;
-                }
+                table[i]=new int[card+1];
             }
-            int a,b;
-            cin>>a>>b;
-            znCorp[indexZ].multiplyOperation(a,b);
-        }
-        else if(corp[index].getType()==0)
-        {
-            cout<<"Selecteaza elementele pentru operatia de inmultire:\n";
-            int card=corp[index].getCardinal();
-            string *elements=new string[card+1];
-
-            corp[index].getElements(card,elements);
-
+            ring[index]->getMonoid1(0,card,table);
             for(int i=1;i<=card;++i)
-                cout<<elements[i]<<" ";
-            cout<<"\n";
-            string a,b;
-            cin>>a>>b;
-            cout<<a<<" * "<<b<<" = "<<corp[index].multiplyOperation(a,b)<<"\n";
-            delete[] elements;
+            {
+                for(int j=1;j<=card;++j)
+                    cout<<table[i][j];
+                cout<<"\n";
+            }
+            if(prim(ring[index]->getCardinal())==1)
+            {
+                //cout<<"aici";
+                int card=ring[index]->getCardinal();
+                ring[index]=new ZnCorp;
+                ZnCorp *z=new ZnCorp;
+                z=dynamic_cast<ZnCorp*>(ring[index]);
+                z->setCardinal(card);
+                z->setNume(nume);
+                z->TestCast();
+            }
         }
-    }
+        else if(ring[index]->test()==1)
+        {
+            Ring *r=ring[index];
+            ring[index]=new Corp;
+            //ring[i]=r;
+            //ring[i]->printData();
+            //r->printData();
+            //ring[i]->printData();
+            Corp *c;
+            c=dynamic_cast<Corp*>(ring[index]);
+            c->setNume(r->getNume());
+        }
+        ring[index]->TestCast();
+    /*for(int i=1;i<=nr_ring;++i)
+    {
+        ring[i]->TestCast();
+    }*/
 }
-void findNeutrals(Ring ring[],int nr_ring, Corp corp[], int nr_corp, RationalGroup rationalCorp, ComplexCorp complexCorp, RealGroup realCorp, ZnCorp znCorp[],int nr_Zn)
+void addition(Ring **ring,int nr_ring)
 {
     cout<<"Selecteaza inelul pe care vrei sa il testati:\n";
-    //cout<<nr_corp<<"\n";
-    for(int i=1;i<=nr_corp;++i)
-    {
-        cout<<corp[i].getNume()<<" ";
-    }
-    cout<<"\n";
-    string choice;
-    cin>>choice;
-    int index=0;
-    for(int i=1;i<=nr_corp;++i)
-    {
-        if(corp[i].getNume()==choice)
-            index=i;
-    }
-    if(index==0)
-    {
-        cout<<"Invalid input";
-    }
-    else
-    {
-        if(corp[index].getNume()=="Q")
-        {
-            rationalCorp.neutralsElements();
-        }
-        if(corp[index].getNume()=="R")
-        {
-            realCorp.neutralsElements();
-        }
-        else if(corp[index].getNume()=="C")
-        {
-            complexCorp.neutralsElements();
-        }
-        else if(corp[index].getNume().substr(0,2)=="Z/")
-        {
-            int indexZ=0;
-            for(int i=1;i<=nr_Zn;++i)
-            {
-                if(znCorp[i].getNume()==corp[index].getNume())
-                {
-                    indexZ=i;
-                    break;
-                }
-            }
-            znCorp[indexZ].neutralsElements();
-        }
-        else if(corp[index].getType()==0)
-        {
-            corp[index].neutralsElements();
-        }
-    }
-}
-void inverse(Ring ring[],int nr_ring, Corp corp[], int nr_corp, RationalGroup rationalCorp, ComplexCorp complexCorp, RealGroup realCorp, ZnCorp znCorp[],int nr_Zn)
-{
-    cout<<"Selecteaza inelul pe care vrei sa il testati:\n";
-    //cout<<nr_corp<<"\n";
-    for(int i=1;i<=nr_corp;++i)
-    {
-        cout<<corp[i].getNume()<<" ";
-    }
-    cout<<"\n";
-    string choice;
-    cin>>choice;
-    int index=0;
-    for(int i=1;i<=nr_corp;++i)
-    {
-        if(corp[i].getNume()==choice)
-            index=i;
-    }
-    if(index==0)
-    {
-        cout<<"Invalid input";
-    }
-    else
-    {
-        if(corp[index].getNume()=="Q")
-        {
-            double a,b;
-            cin>>a;
-            rationalCorp.inverseElement(a);
-        }
-        if(corp[index].getNume()=="R")
-        {
-                double a,b;
-                cin>>a;
-                realCorp.inverseElement(a);
-        }
-        else if(corp[index].getNume()=="C")
-        {
-            Nrcomplex a;
-            cin>>a;
-            complexCorp.inverseElement(a);
-        }
-        else if(corp[index].getNume().substr(0,2)=="Z/")
-        {
-            int indexZ=0;
-            for(int i=1;i<=nr_Zn;++i)
-            {
-                if(znCorp[i].getNume()==corp[index].getNume())
-                {
-                    indexZ=i;
-                    break;
-                }
-            }
-            int a;
-            cin>>a;
-            znCorp[indexZ].inverseElement(a);
-        }
-        else if(corp[index].getType()==0)
-        {
-            cout<<"Selecteaza elementul:\n";
-            int card=corp[index].getCardinal();
-            string *elements=new string[card+1];
-
-            corp[index].getElements(card,elements);
-
-            for(int i=1;i<=card;++i)
-                cout<<elements[i]<<" ";
-            cout<<"\n";
-            string a;
-            cin>>a;
-            corp[index].inverseElement(a);
-            delete[] elements;
-        }
-    }
-}
-void ordin(Ring ring[],int nr_ring, Corp corp[], int nr_corp, RationalGroup rationalCorp, ComplexCorp complexCorp, RealGroup realCorp, ZnCorp znCorp[],int nr_Zn)
-{
-    cout<<"Selecteaza inelul pe care vrei sa il testati:\n";
-    //cout<<nr_corp<<"\n";
-    for(int i=1;i<=nr_corp;++i)
-    {
-        cout<<corp[i].getNume()<<" ";
-    }
-    cout<<"\n";
-    string choice;
-    cin>>choice;
-    int index=0;
-    for(int i=1;i<=nr_corp;++i)
-    {
-        if(corp[i].getNume()==choice)
-            index=i;
-    }
-    if(index==0)
-    {
-        cout<<"Invalid input";
-    }
-    else
-    {
-        if(corp[index].getNume()=="Q")
-        {
-            double a;
-            cin>>a;
-            rationalCorp.orderElement(a);
-        }
-        if(corp[index].getNume()=="R")
-        {
-            double a;
-            cin>>a;
-            realCorp.orderElement(a);
-        }
-        else if(corp[index].getNume()=="C")
-        {
-            Nrcomplex a;
-            complexCorp.orderElement(a);
-        }
-        else if(corp[index].getNume().substr(0,2)=="Z/")
-        {
-            int indexZ=0;
-            for(int i=1;i<=nr_Zn;++i)
-            {
-                if(znCorp[i].getNume()==corp[index].getNume())
-                {
-                    indexZ=i;
-                    break;
-                }
-            }
-            int a;
-            cin>>a;
-            znCorp[indexZ].orderElement(a);
-        }
-        else if(corp[index].getType()==0)
-        {
-            cout<<"Selecteaza elementul:\n";
-            int card=corp[index].getCardinal();
-            string *elements=new string[card+1];
-
-            corp[index].getElements(card,elements);
-
-            for(int i=1;i<=card;++i)
-                cout<<elements[i]<<" ";
-            cout<<"\n";
-            string a;
-            cin>>a;
-            corp[index].orderElement(a);
-            delete[] elements;
-        }
-    }
-}
-void deduction(Ring ring[],int nr_ring, Corp corp[], int nr_corp, RationalGroup rationalCorp, ComplexCorp complexCorp, RealGroup realCorp, ZnCorp znCorp[],int nr_Zn)
-{
-    cout<<"Selecteaza inelul pe care vrei sa il testati:\n";
-    //cout<<nr_corp<<"\n";
-    for(int i=1;i<=nr_corp;++i)
-    {
-        cout<<corp[i].getNume()<<" ";
-    }
-    cout<<"\n";
-    string choice;
-    cin>>choice;
-    int index=0;
-    for(int i=1;i<=nr_corp;++i)
-    {
-        if(corp[i].getNume()==choice)
-            index=i;
-    }
-    if(index==0)
-    {
-        cout<<"Invalid input";
-    }
-    else
-    {
-        if(corp[index].getNume()=="Q")
-        {
-            double a,b;
-            cin>>a>>b;
-            rationalCorp.substractionOperation(a,b);
-        }
-        if(corp[index].getNume()=="R")
-        {
-                double a,b;
-                cin>>a>>b;
-                realCorp.substractionOperation(a,b);
-        }
-        else if(corp[index].getNume()=="C")
-        {
-            Nrcomplex a,b;
-            cin>>a>>b;
-            complexCorp.substractionOperation(a,b);
-        }
-        else if(corp[index].getNume().substr(0,2)=="Z/")
-        {
-            int indexZ=0;
-            for(int i=1;i<=nr_Zn;++i)
-            {
-                if(znCorp[i].getNume()==corp[index].getNume())
-                {
-                    indexZ=i;
-                    break;
-                }
-            }
-            int a,b;
-            cin>>a>>b;
-            znCorp[indexZ].multiplyOperation(a,b);
-        }
-        else if(corp[index].getType()==0)
-        {
-            cout<<"Selecteaza elementele pentru operatia de scadere:\n";
-            int card=corp[index].getCardinal();
-            string *elements=new string[card+1];
-
-            corp[index].getElements(card,elements);
-
-            for(int i=1;i<=card;++i)
-                cout<<elements[i]<<" ";
-            cout<<"\n";
-            string a,b;
-            cin>>a>>b;
-            cout<<a<<" - "<<b<<" = "<<corp[index].substractionOperation(a,b)<<"\n";
-            delete[] elements;
-        }
-    }
-}
-void division(Ring ring[],int nr_ring, Corp corp[], int nr_corp, RationalGroup rationalCorp, ComplexCorp complexCorp, RealGroup realCorp, ZnCorp znCorp[],int nr_Zn)
-{
-    cout<<"Selecteaza inelul pe care vrei sa il testati:\n";
-    //cout<<nr_corp<<"\n";
-    for(int i=1;i<=nr_corp;++i)
-    {
-        cout<<corp[i].getNume()<<" ";
-    }
-    cout<<"\n";
-    string choice;
-    cin>>choice;
-    int index=0;
-    for(int i=1;i<=nr_corp;++i)
-    {
-        if(corp[i].getNume()==choice)
-            index=i;
-    }
-    if(index==0)
-    {
-        cout<<"Invalid input";
-    }
-    else
-    {
-        if(corp[index].getNume()=="Q")
-        {
-            double a,b;
-            cin>>a>>b;
-            rationalCorp.divideOperation(a,b);
-        }
-        if(corp[index].getNume()=="R")
-        {
-                double a,b;
-                cin>>a>>b;
-                realCorp.divideOperation(a,b);
-        }
-        else if(corp[index].getNume()=="C")
-        {
-            Nrcomplex a,b;
-            cin>>a>>b;
-            complexCorp.divideOperation(a,b);
-        }
-        else if(corp[index].getNume().substr(0,2)=="Z/")
-        {
-            int indexZ=0;
-            for(int i=1;i<=nr_Zn;++i)
-            {
-                if(znCorp[i].getNume()==corp[index].getNume())
-                {
-                    indexZ=i;
-                    break;
-                }
-            }
-            int a,b;
-            cin>>a>>b;
-            znCorp[indexZ].divideOperation(a,b);
-        }
-        else if(corp[index].getType()==0)
-        {
-            cout<<"Selecteaza elementele pentru operatia de impartire:\n";
-            int card=corp[index].getCardinal();
-            string *elements=new string[card+1];
-
-            corp[index].getElements(card,elements);
-
-            for(int i=1;i<=card;++i)
-                cout<<elements[i]<<" ";
-            cout<<"\n";
-            string a,b;
-            cin>>a>>b;
-            cout<<a<<" / "<<b<<" = "<<corp[index].divideOperation(a,b)<<"\n";
-            delete[] elements;
-        }
-    }
-}
-void testIzomorfism(Ring ring[], int nr_ring, Corp corp[], int nr_corp)
-{
-    if (nr_corp==0)
-    {
-        cout<<"Multimile cu legile de compozitie date nu formeaza o structura de corp \n";
-        //return;
-    }
-    else
-    {
-        cout<<"Selecteaza inelul pe care vrei sa il testati:\n";
         //cout<<nr_corp<<"\n";
-        for(int i=1;i<=nr_corp;++i)
+        for(int i=1;i<=nr_ring;++i)
+        {
+            cout<<ring[i]->getNume()<<" ";
+        }
+        /*for(int i=1;i<=nr_corp;++i)
         {
             cout<<corp[i].getNume()<<" ";
+        }*/
+        cout<<"\n";
+        string choice;
+        cin>>choice;
+        int index=0;
+        try
+        {
+            for(int i=1;i<=nr_ring;++i)
+            {
+                if(ring[i]->getNume()==choice)
+                {
+                    index=i;
+                    break;
+                }
+            }
+            if(index==0 || ring[index]->test()==0)
+            {
+                throw 0;
+            }
+        }catch(int num)
+        {
+            cout<<"Invalid input";
+            interogationMenu(0,ring,nr_ring);
+        }
+    if(ring[index]->getNume()=="Q")
+        {
+            double a,b;
+            cin>>a>>b;
+
+            Ring *r=ring[index];
+            ring[index]=new RationalGroup;
+            RationalGroup *rationalCorp;
+            rationalCorp=dynamic_cast<RationalGroup*>(ring[index]);
+
+            rationalCorp->additionOperation(a,b);
+            ring[index]->TestCast();
+        }
+        if(ring[index]->getNume()=="R")
+        {
+                double a,b;
+                cin>>a>>b;
+
+                Ring *r=ring[index];
+                ring[index]=new RealGroup;
+                RealGroup *realCorp;
+                realCorp=dynamic_cast<RealGroup*>(ring[index]);
+
+                realCorp->additionOperation(a,b);
+                //ring[index]->TestCast();
+                //ring[index]->additionOperation(a,b)
+        }
+        else if(ring[index]->getNume()=="C")
+        {
+            Nrcomplex a,b;
+            cin>>a>>b;
+
+            Ring *r=ring[index];
+                ring[index]=new ComplexCorp;
+                ComplexCorp *complexCorp;
+                complexCorp=dynamic_cast<ComplexCorp*>(ring[index]);
+
+            complexCorp->additionOperation(a,b);
+            //ring[index]->additionOperation(a,b)
+        }
+        else if(ring[index]->getNume().substr(0,2)=="Z/")
+        {
+            int a,b;
+            cin>>a>>b;
+            int card=ring[index]->getCardinal();
+            if(prim(card)==1)
+            {
+                ZnCorp zn;
+                zn.setCardinal(card);
+                zn.additionOperation(a,b);
+            }
+        }
+        else if(ring[index]->getType()==0)
+        {
+            cout<<"Selecteaza elementele pentru operatia de adunare:\n";
+            int card=ring[index]->getCardinal();
+            string *elements=new string[card+1];
+
+            ring[index]->getElements(card,elements);
+
+            for(int i=1;i<=card;++i)
+                cout<<elements[i]<<" ";
+            cout<<"\n";
+            string a,b;
+            cin>>a>>b;
+            cout<<ring[index]->additionOperation(a,b)<<"\n";
+        }
+
+}
+void multiply(Ring **ring,int nr_ring)
+{
+    cout<<"Selecteaza inelul pe care vrei sa il testati:\n";
+        //cout<<nr_corp<<"\n";
+        for(int i=1;i<=nr_ring;++i)
+        {
+            cout<<ring[i]->getNume()<<" ";
+        }
+        /*for(int i=1;i<=nr_corp;++i)
+        {
+            cout<<corp[i].getNume()<<" ";
+        }*/
+        cout<<"\n";
+        string choice;
+        cin>>choice;
+        int index=0;
+        try
+        {
+            for(int i=1;i<=nr_ring;++i)
+            {
+                if(ring[i]->getNume()==choice)
+                {
+                    index=i;
+                    break;
+                }
+            }
+            if(index==0)
+            {
+                throw 0;
+            }
+        }catch(int num)
+        {
+            cout<<"Invalid input";
+            interogationMenu(0,ring,nr_ring);
+        }
+    if(ring[index]->getNume()=="Q")
+        {
+            double a,b;
+            cin>>a>>b;
+
+            Ring *r=ring[index];
+            ring[index]=new RationalGroup;
+            RationalGroup *rationalCorp;
+            rationalCorp=dynamic_cast<RationalGroup*>(ring[index]);
+
+            rationalCorp->multiplyOperation(a,b);
+            ring[index]->TestCast();
+        }
+        if(ring[index]->getNume()=="R")
+        {
+                double a,b;
+                cin>>a>>b;
+
+                Ring *r=ring[index];
+                ring[index]=new RealGroup;
+                RealGroup *realCorp;
+                realCorp=dynamic_cast<RealGroup*>(ring[index]);
+
+                realCorp->multiplyOperation(a,b);
+                //ring[index]->TestCast();
+                //ring[index]->multiplyOperation(a,b)
+        }
+        else if(ring[index]->getNume()=="C")
+        {
+            Nrcomplex a,b;
+            cin>>a>>b;
+
+            Ring *r=ring[index];
+                ring[index]=new ComplexCorp;
+                ComplexCorp *complexCorp;
+                complexCorp=dynamic_cast<ComplexCorp*>(ring[index]);
+
+            complexCorp->multiplyOperation(a,b);
+            //ring[index]->multiplyOperation(a,b)
+        }
+        else if(ring[index]->getNume().substr(0,2)=="Z/")
+        {
+            int a,b;
+            cin>>a>>b;
+            int card=ring[index]->getCardinal();
+            if(prim(card)==1)
+            {
+                ZnCorp zn;
+                zn.setCardinal(card);
+                zn.multiplyOperation(a,b);
+            }
+        }
+        else if(ring[index]->getType()==0)
+        {
+            cout<<"Selecteaza elementele pentru operatia de adunare:\n";
+            int card=ring[index]->getCardinal();
+            string *elements=new string[card+1];
+
+            ring[index]->getElements(card,elements);
+
+            for(int i=1;i<=card;++i)
+                cout<<elements[i]<<" ";
+            cout<<"\n";
+            string a,b;
+            cin>>a>>b;
+            cout<<ring[index]->multiplyOperation(a,b)<<"\n";
+        }
+}
+void findNeutrals(Ring **ring,int nr_ring)
+{
+    cout<<"Selecteaza inelul pe care vrei sa il testati:\n";
+        //cout<<nr_corp<<"\n";
+        for(int i=1;i<=nr_ring;++i)
+        {
+            cout<<ring[i]->getNume()<<" ";
+        }
+        /*for(int i=1;i<=nr_corp;++i)
+        {
+            cout<<corp[i].getNume()<<" ";
+        }*/
+        cout<<"\n";
+        string choice;
+        cin>>choice;
+        int index=0;
+        try
+        {
+            for(int i=1;i<=nr_ring;++i)
+            {
+                if(ring[i]->getNume()==choice)
+                {
+                    index=i;
+                    break;
+                }
+            }
+            if(index==0)
+            {
+                throw 0;
+            }
+        }catch(int num)
+        {
+            cout<<"Invalid input";
+            interogationMenu(0,ring,nr_ring);
+        }
+    if(ring[index]->getNume()=="Q")
+        {
+            Ring *r=ring[index];
+            ring[index]=new RationalGroup;
+            RationalGroup *rationalCorp;
+            rationalCorp=dynamic_cast<RationalGroup*>(ring[index]);
+
+            rationalCorp->neutralsElements();
+            ring[index]->TestCast();
+        }
+        if(ring[index]->getNume()=="R")
+        {
+                Ring *r=ring[index];
+                ring[index]=new RealGroup;
+                RealGroup *realCorp;
+                realCorp=dynamic_cast<RealGroup*>(ring[index]);
+
+                realCorp->neutralsElements();
+                //ring[index]->TestCast();
+                //ring[index]->multiplyOperation(a,b)
+        }
+        else if(ring[index]->getNume()=="C")
+        {
+
+            Ring *r=ring[index];
+                ring[index]=new ComplexCorp;
+                ComplexCorp *complexCorp;
+                complexCorp=dynamic_cast<ComplexCorp*>(ring[index]);
+
+            complexCorp->neutralsElements();
+            //ring[index]->multiplyOperation(a,b)
+        }
+        else if(ring[index]->getNume().substr(0,2)=="Z/")
+        {
+            cout<<0<<" "<<1;
+        }
+        else if(ring[index]->getType()==0)
+        {
+            cout<<"Selecteaza elementele pentru operatia de adunare:\n";
+            int card=ring[index]->getCardinal();
+            string *elements=new string[card+1];
+
+            ring[index]->getElements(card,elements);
+
+            ring[index]->neutralsElements();
+        }
+}
+void ordin(Ring **ring,int nr_ring)
+{
+    cout<<"Selecteaza inelul pe care vrei sa il testati:\n";
+        //cout<<nr_corp<<"\n";
+        for(int i=1;i<=nr_ring;++i)
+        {
+            cout<<ring[i]->getNume()<<" ";
+        }
+        /*for(int i=1;i<=nr_corp;++i)
+        {
+            cout<<corp[i].getNume()<<" ";
+        }*/
+        cout<<"\n";
+        string choice;
+        cin>>choice;
+        int index=0;
+        try
+        {
+            for(int i=1;i<=nr_ring;++i)
+            {
+                if(ring[i]->getNume()==choice)
+                {
+                    index=i;
+                    break;
+                }
+            }
+            if(index==0)
+            {
+                throw 0;
+            }
+        }catch(int num)
+        {
+            cout<<"Invalid input";
+            interogationMenu(0,ring,nr_ring);
+        }
+    if(ring[index]->getNume()=="Q")
+        {
+            Ring *r=ring[index];
+            ring[index]=new RationalGroup;
+            RationalGroup *rationalCorp;
+            rationalCorp=dynamic_cast<RationalGroup*>(ring[index]);
+
+            double a;
+            cin>>a;
+            rationalCorp->orderElement(a);
+            ring[index]->TestCast();
+        }
+        if(ring[index]->getNume()=="R")
+        {
+                Ring *r=ring[index];
+                ring[index]=new RealGroup;
+                RealGroup *realCorp;
+                realCorp=dynamic_cast<RealGroup*>(ring[index]);
+
+                double a;
+                cin>>a;
+                realCorp->orderElement(a);
+                //ring[index]->TestCast();
+                //ring[index]->multiplyOperation(a,b)
+        }
+        else if(ring[index]->getNume()=="C")
+        {
+
+            Ring *r=ring[index];
+                ring[index]=new ComplexCorp;
+                ComplexCorp *complexCorp;
+                complexCorp=dynamic_cast<ComplexCorp*>(ring[index]);
+
+            Nrcomplex a;
+            cin>>a;
+            complexCorp->orderElement(a);
+            //ring[index]->multiplyOperation(a,b)
+        }
+        else if(ring[index]->getNume().substr(0,2)=="Z/")
+        {
+            int a;
+            cin>>a;
+            int card=ring[index]->getCardinal();
+            if(prim(card)==1)
+            {
+                ZnCorp zn;
+                zn.setCardinal(card);
+                zn.orderElement(a);
+            }
+            else
+                cout<<"nu e corp";
+        }
+        else if(ring[index]->getType()==0)
+        {
+            cout<<"Selecteaza elementele pentru operatia de adunare:\n";
+            int card=ring[index]->getCardinal();
+            string *elements=new string[card+1];
+
+            ring[index]->getElements(card,elements);
+            string a;
+            cin>>a;
+            ring[index]->orderElement(a);
+        }
+}
+void inverse(Ring **ring,int nr_ring)
+{
+    cout<<"Selecteaza inelul pe care vrei sa il testati:\n";
+        //cout<<nr_corp<<"\n";
+        for(int i=1;i<=nr_ring;++i)
+        {
+            cout<<ring[i]->getNume()<<" ";
+        }
+        /*for(int i=1;i<=nr_corp;++i)
+        {
+            cout<<corp[i].getNume()<<" ";
+        }*/
+        cout<<"\n";
+        string choice;
+        cin>>choice;
+        int index=0;
+        try
+        {
+            for(int i=1;i<=nr_ring;++i)
+            {
+                if(ring[i]->getNume()==choice)
+                {
+                    index=i;
+                    break;
+                }
+            }
+            if(index==0)
+            {
+                throw 0;
+            }
+        }catch(int num)
+        {
+            cout<<"Invalid input";
+            interogationMenu(0,ring,nr_ring);
+        }
+    if(ring[index]->getNume()=="Q")
+        {
+            Ring *r=ring[index];
+            ring[index]=new RationalGroup;
+            RationalGroup *rationalCorp;
+            rationalCorp=dynamic_cast<RationalGroup*>(ring[index]);
+
+            double a;
+            cin>>a;
+            rationalCorp->inverseElement(a);
+            ring[index]->TestCast();
+        }
+        if(ring[index]->getNume()=="R")
+        {
+                Ring *r=ring[index];
+                ring[index]=new RealGroup;
+                RealGroup *realCorp;
+                realCorp=dynamic_cast<RealGroup*>(ring[index]);
+
+                double a;
+                cin>>a;
+                realCorp->inverseElement(a);
+                //ring[index]->TestCast();
+                //ring[index]->multiplyOperation(a,b)
+        }
+        else if(ring[index]->getNume()=="C")
+        {
+
+            Ring *r=ring[index];
+                ring[index]=new ComplexCorp;
+                ComplexCorp *complexCorp;
+                complexCorp=dynamic_cast<ComplexCorp*>(ring[index]);
+
+            Nrcomplex a;
+            cin>>a;
+            complexCorp->inverseElement(a);
+            //ring[index]->multiplyOperation(a,b)
+        }
+        else if(ring[index]->getNume().substr(0,2)=="Z/")
+        {
+            int a;
+            cin>>a;
+            int card=ring[index]->getCardinal();
+            if(prim(card)==1)
+            {
+                ZnCorp zn;
+                zn.setCardinal(card);
+                zn.inverseElement(a);
+            }
+            else
+                cout<<"nu e corp";
+        }
+        else if(ring[index]->getType()==0)
+        {
+            cout<<"Selecteaza elementele pentru operatia de adunare:\n";
+            int card=ring[index]->getCardinal();
+            string *elements=new string[card+1];
+
+            ring[index]->getElements(card,elements);
+            string a;
+            cin>>a;
+            ring[index]->inverseElement(a);
+        }
+}
+void deduction(Ring **ring,int nr_ring)
+{
+    cout<<"Selecteaza inelul pe care vrei sa il testati:\n";
+        //cout<<nr_corp<<"\n";
+        for(int i=1;i<=nr_ring;++i)
+        {
+            cout<<ring[i]->getNume()<<" ";
+        }
+        /*for(int i=1;i<=nr_corp;++i)
+        {
+            cout<<corp[i].getNume()<<" ";
+        }*/
+        cout<<"\n";
+        string choice;
+        cin>>choice;
+        int index=0;
+        try
+        {
+            for(int i=1;i<=nr_ring;++i)
+            {
+                if(ring[i]->getNume()==choice)
+                {
+                    index=i;
+                    break;
+                }
+            }
+            if(index==0)
+            {
+                throw 0;
+            }
+        }catch(int num)
+        {
+            cout<<"Invalid input";
+            interogationMenu(0,ring,nr_ring);
+        }
+    if(ring[index]->getNume()=="Q")
+        {
+            double a,b;
+            cin>>a>>b;
+
+            Ring *r=ring[index];
+            ring[index]=new RationalGroup;
+            RationalGroup *rationalCorp;
+            rationalCorp=dynamic_cast<RationalGroup*>(ring[index]);
+
+            rationalCorp->substractionOperation(a,b);
+            ring[index]->TestCast();
+        }
+        if(ring[index]->getNume()=="R")
+        {
+                double a,b;
+                cin>>a>>b;
+
+                Ring *r=ring[index];
+                ring[index]=new RealGroup;
+                RealGroup *realCorp;
+                realCorp=dynamic_cast<RealGroup*>(ring[index]);
+
+                realCorp->substractionOperation(a,b);
+                //ring[index]->TestCast();
+                //ring[index]->additionOperation(a,b)
+        }
+        else if(ring[index]->getNume()=="C")
+        {
+            Nrcomplex a,b;
+            cin>>a>>b;
+
+            Ring *r=ring[index];
+                ring[index]=new ComplexCorp;
+                ComplexCorp *complexCorp;
+                complexCorp=dynamic_cast<ComplexCorp*>(ring[index]);
+
+            complexCorp->substractionOperation(a,b);
+            //ring[index]->additionOperation(a,b)
+        }
+        else if(ring[index]->getNume().substr(0,2)=="Z/")
+        {
+            int a,b;
+            cin>>a>>b;
+            int card=ring[index]->getCardinal();
+            cout<<(a-b)%card;
+        }
+        else if(ring[index]->getType()==0)
+        {
+            cout<<"Selecteaza elementele pentru operatia de adunare:\n";
+            int card=ring[index]->getCardinal();
+            string *elements=new string[card+1];
+
+            ring[index]->getElements(card,elements);
+
+            for(int i=1;i<=card;++i)
+                cout<<elements[i]<<" ";
+            cout<<"\n";
+            string a,b;
+            cin>>a>>b;
+            cout<<ring[index]->substractionOperation(a,b)<<"\n";
+        }
+}
+void division(Ring **ring,int nr_ring)
+{
+    cout<<"Selecteaza inelul pe care vrei sa il testati:\n";
+        //cout<<nr_corp<<"\n";
+        for(int i=1;i<=nr_ring;++i)
+        {
+            cout<<ring[i]->getNume()<<" ";
+        }
+        /*for(int i=1;i<=nr_corp;++i)
+        {
+            cout<<corp[i].getNume()<<" ";
+        }*/
+        cout<<"\n";
+        string choice;
+        cin>>choice;
+        int index=0;
+        try
+        {
+            for(int i=1;i<=nr_ring;++i)
+            {
+                if(ring[i]->getNume()==choice)
+                {
+                    index=i;
+                    break;
+                }
+            }
+            if(index==0)
+            {
+                throw 0;
+            }
+        }catch(int num)
+        {
+            cout<<"Invalid input";
+            interogationMenu(0,ring,nr_ring);
+        }
+    if(ring[index]->getNume()=="Q")
+        {
+            double a,b;
+            cin>>a>>b;
+
+            Ring *r=ring[index];
+            ring[index]=new RationalGroup;
+            RationalGroup *rationalCorp;
+            rationalCorp=dynamic_cast<RationalGroup*>(ring[index]);
+
+            rationalCorp->divideOperation(a,b);
+            ring[index]->TestCast();
+        }
+        if(ring[index]->getNume()=="R")
+        {
+                double a,b;
+                cin>>a>>b;
+
+                Ring *r=ring[index];
+                ring[index]=new RealGroup;
+                RealGroup *realCorp;
+                realCorp=dynamic_cast<RealGroup*>(ring[index]);
+
+                realCorp->divideOperation(a,b);
+                //ring[index]->TestCast();
+                //ring[index]->additionOperation(a,b)
+        }
+        else if(ring[index]->getNume()=="C")
+        {
+            Nrcomplex a,b;
+            cin>>a>>b;
+
+            Ring *r=ring[index];
+                ring[index]=new ComplexCorp;
+                ComplexCorp *complexCorp;
+                complexCorp=dynamic_cast<ComplexCorp*>(ring[index]);
+
+            complexCorp->divideOperation(a,b);
+            //ring[index]->additionOperation(a,b)
+        }
+        else if(ring[index]->getNume().substr(0,2)=="Z/")
+        {
+            int a,b;
+            cin>>a>>b;
+            int card=ring[index]->getCardinal();
+            cout<<(a/b)%card;
+        }
+        else if(ring[index]->getType()==0)
+        {
+            cout<<"Selecteaza elementele pentru operatia de adunare:\n";
+            int card=ring[index]->getCardinal();
+            string *elements=new string[card+1];
+
+            ring[index]->getElements(card,elements);
+
+            for(int i=1;i<=card;++i)
+                cout<<elements[i]<<" ";
+            cout<<"\n";
+            string a,b;
+            cin>>a>>b;
+            cout<<ring[index]->divideOperation(a,b)<<"\n";
+        }
+}
+void testIzomorfism(Ring **ring,int nr_ring)
+{
+    cout<<"Selecteaza inelul pe care vrei sa il testati:\n";
+        //cout<<nr_corp<<"\n";
+        for(int i=1;i<=nr_ring;++i)
+        {
+            cout<<ring[i]->getNume()<<" ";
         }
         cout<<"\n";
         string choice1,choice2;
         cin>>choice1>>choice2;
         int index1=0;
-        int index2=0;
-        for(int i=1;i<=nr_corp;++i)
+            int index2=0;
+        try
         {
-            if(corp[i].getNume()==choice1)
+            for(int i=1;i<=nr_ring;++i)
             {
-                index1=i;
+                if(ring[i]->getNume()==choice1)
+                {
+                    index1=i;
+                }
+                else if(ring[i]->getNume()==choice2)
+                    index2=i;
             }
-            else if(corp[i].getNume()==choice2)
-                index2=i;
+            if(index1==0 || index2==0)
+                throw 0;
         }
-        if(index1==0 || index2==0)
+        catch(int num)
         {
             cout<<"Invalid input";
+            interogationMenu(0,ring,nr_ring);
         }
-        else
-        {
+        cout<<"\n";
             cout<<"Corpurile ";
-            cout<<corp[index1].getType()<<" "<<corp[index2].getType()<<"\n";
-            if(corp[index1]==corp[index2])
-            {
-                cout<<"Sunt izomorfe";
-            }
-            else
-            {
-                cout<<"Nu sunt izomorfe";
-            }
-        }
+            cout<<ring[index1]->getType()<<" "<<ring[index2]->getType()<<"\n";
+            Corp c1(*ring[index1]);
+            Corp c2(*ring[index2]);
+            cout<<"_________________________";
+            c1.printData();
+            c2.printData();
+            cout<<"_________________________";
+            //else
+            //{
+                if(c1==c2)//conversie de tip
+                {
+                    cout<<"Sunt izomorfe";
+                }
+                else
+                {
+                    cout<<"Nu sunt izomorfe";
+                }
+            //}
 
-    }
 }
-void testEgalitate(Ring ring[],int nr_ring, Corp corp[], int nr_corp, RationalGroup rationalCorp, ComplexCorp complexCorp, RealGroup realCorp, ZnCorp znCorp[],int nr_Zn)
+void testEgalitate(Ring **ring,int nr_ring)
 {
     cout<<"Selecteaza inelul pe care vrei sa il testati:\n";
-    //cout<<nr_corp<<"\n";
-    for(int i=1;i<=nr_corp;++i)
-    {
-        cout<<corp[i].getNume()<<" ";
-    }
-    cout<<"\n";
-    string choice;
-    cin>>choice;
-    int index=0;
-    for(int i=1;i<=nr_corp;++i)
-    {
-        if(corp[i].getNume()==choice)
-            index=i;
-    }
-    if(index==0)
-    {
-        cout<<"Invalid input";
-    }
-    else
-    {
-        if(corp[index].getNume()=="Q")
+        //cout<<nr_corp<<"\n";
+        for(int i=1;i<=nr_ring;++i)
+        {
+            cout<<ring[i]->getNume()<<" ";
+        }
+        /*for(int i=1;i<=nr_corp;++i)
+        {
+            cout<<corp[i].getNume()<<" ";
+        }*/
+        cout<<"\n";
+        string choice;
+        cin>>choice;
+        int index=0;
+        try
+        {
+            for(int i=1;i<=nr_ring;++i)
+            {
+                if(ring[i]->getNume()==choice)
+                {
+                    index=i;
+                    break;
+                }
+            }
+            if(index==0 || ring[index]->test()==0)
+            {
+                throw 0;
+            }
+        }catch(int num)
+        {
+            cout<<"Invalid input";
+            interogationMenu(0,ring,nr_ring);
+        }
+    if(ring[index]->getNume()=="Q")
         {
             double a,b;
             cin>>a>>b;
-            rationalCorp.testIsEqual(a,b);
+
+            Ring *r=ring[index];
+            ring[index]=new RationalGroup;
+            RationalGroup *rationalCorp;
+            rationalCorp=dynamic_cast<RationalGroup*>(ring[index]);
+
+            rationalCorp->divideOperation(a,b);
+            ring[index]->TestCast();
         }
-        if(corp[index].getNume()=="R")
+        if(ring[index]->getNume()=="R")
         {
                 double a,b;
                 cin>>a>>b;
-                realCorp.testIsEqual(a,b);
+
+                Ring *r=ring[index];
+                ring[index]=new RealGroup;
+                RealGroup *realCorp;
+                realCorp=dynamic_cast<RealGroup*>(ring[index]);
+
+                realCorp->testIsEqual(a,b);
+                //ring[index]->TestCast();
+                //ring[index]->additionOperation(a,b)
         }
-        else if(corp[index].getNume()=="C")
+        else if(ring[index]->getNume()=="C")
         {
             Nrcomplex a,b;
             cin>>a>>b;
-            complexCorp.testIsEqual(a,b);
+
+            Ring *r=ring[index];
+                ring[index]=new ComplexCorp;
+                ComplexCorp *complexCorp;
+                complexCorp=dynamic_cast<ComplexCorp*>(ring[index]);
+
+            complexCorp->testIsEqual(a,b);
+            //ring[index]->additionOperation(a,b)
         }
-        else if(corp[index].getNume().substr(0,2)=="Z/")
+        else if(ring[index]->getNume().substr(0,2)=="Z/")
         {
             int indexZ=0;
-            for(int i=1;i<=nr_Zn;++i)
+            /*for(int i=1;i<=nr_Zn;++i)
             {
                 if(znCorp[i].getNume()==corp[index].getNume())
                 {
                     indexZ=i;
                     break;
                 }
-            }
+            }*/
             int a,b;
             cin>>a>>b;
-            znCorp[indexZ].testIsEqual(a,b);
+            int card=ring[index]->getCardinal();
+            if(a%card==b%card)
+                cout<<"egal";
+            else
+                cout<<"nu sunt egale";
         }
-        else if(corp[index].getType()==0)
+        else if(ring[index]->getType()==0)
         {
-            cout<<"Selecteaza elementele pentru operatia de inmultire:\n";
-            int card=corp[index].getCardinal();
+            cout<<"Selecteaza elementele pentru operatia de adunare:\n";
+            int card=ring[index]->getCardinal();
             string *elements=new string[card+1];
 
-            corp[index].getElements(card,elements);
+            ring[index]->getElements(card,elements);
 
             for(int i=1;i<=card;++i)
                 cout<<elements[i]<<" ";
             cout<<"\n";
             string a,b;
             cin>>a>>b;
-            corp[index].testIsEqual(a,b);
-            delete[] elements;
+            ring[index]->testIsEqual(a,b);
         }
-    }
 }
-void interogationMenu(int option,Ring ring[],int nr_ring, Corp corp[], int nr_corp, RationalGroup rationalCorp, ComplexCorp complexCorp, RealGroup realCorp, ZnCorp znCorp[],int nr_zn)
+void interogationMenu(int option, Ring **ring,int nr_ring)
 {
-    Menu interogationOperation;
+    Interface *interface=Interface::getInstance();
     string operations[]={"Testeaza daca este corp","Realizeaza adunarea a 2 elemente","Realizeaza inmultirea a 2 elemente"
                         ,"Calculeaza elementele netru din corp","Calculeaza inversul si opusul unui element","Calculeaza ordinul unui element"
                         ,"Realizeaza scaderea a 2 elemente","Realizeaza impartirea a 2 elemente","Test izomorfism","Testare egalitate"
                         };
-    interogationOperation.getOptions(operations,10);
-    interogationOperation.showMenuChoice(option);
-
+    interface->getOptions(operations,10);
+    interface->showInterfaceChoice(option);
+    //cout<<interface<<"\n";
     switch (option)
             {
                 case 1: // Up arrow key
-                    testCorp(ring,nr_ring,corp,nr_corp);
+                    testCorp(ring,nr_ring);
                     //option=0;
                     //interogationMenu(option,ring,nr_ring,corp,nr_corp,rationalCorp,complexCorp,realCorp,znCorp,nr_zn);
                     break;
 
                 case 2:
-                    addition(ring,nr_ring,corp,nr_corp,rationalCorp,complexCorp,realCorp,znCorp,nr_zn);
+                    addition(ring,nr_ring);
                     break;
 
                 case 3:
-                    multiply(ring,nr_ring,corp,nr_corp,rationalCorp,complexCorp,realCorp,znCorp,nr_zn);
+                    multiply(ring,nr_ring);
                     break;
 
                 case 4:
-                    findNeutrals(ring,nr_ring,corp,nr_corp,rationalCorp,complexCorp,realCorp,znCorp,nr_zn);
+                    findNeutrals(ring,nr_ring);
                     break;
 
                 case 5:
-                    inverse(ring,nr_ring,corp,nr_corp,rationalCorp,complexCorp,realCorp,znCorp,nr_zn);
+                    inverse(ring,nr_ring);
                     break;
 
                 case 6:
-                    ordin(ring,nr_ring,corp,nr_corp,rationalCorp,complexCorp,realCorp,znCorp,nr_zn);
+                    ordin(ring,nr_ring);
                     break;
 
                 case 7:
-                    deduction(ring,nr_ring,corp,nr_corp,rationalCorp,complexCorp,realCorp,znCorp,nr_zn);
+                    deduction(ring,nr_ring);
                     break;
 
                 case 8:
-                    division(ring,nr_ring,corp,nr_corp,rationalCorp,complexCorp,realCorp,znCorp,nr_zn);
+                    division(ring,nr_ring);
                     break;
 
                 case 9:
-                    testIzomorfism(ring,nr_ring,corp,nr_corp);
+                    testIzomorfism(ring,nr_ring);
                     break;
 
                 case 10:
-                    testEgalitate(ring,nr_ring,corp,nr_corp,rationalCorp,complexCorp,realCorp,znCorp,nr_zn);
+                    testEgalitate(ring,nr_ring);
                     break;
 
                 case 11:
@@ -810,7 +1036,7 @@ void interogationMenu(int option,Ring ring[],int nr_ring, Corp corp[], int nr_co
             }
 }
 
-
+Interface *Interface::instancePtr=NULL;
 void openFileInput()
 {
     system("cls");
@@ -827,7 +1053,9 @@ void openFileInput()
         cout<<"exists \n";
         int nr_ring;
         fin>>nr_ring;
-        Ring *ring=new Ring[nr_ring+1];
+        Ring *ring[nr_ring+1];
+        for(int i=1;i<=nr_ring;++i)
+            ring[i]=new Ring;
         Corp *corp=new Corp[nr_ring+1];
         RealGroup realCorp;
         RationalGroup rationalCorp;
@@ -837,41 +1065,41 @@ void openFileInput()
         int nr_zn=0;
         for(int i=1;i<=nr_ring;++i)
         {
-            fin>>ring[i];
-            if(ring[i].getType()!=0)
+            fin>>*ring[i];
+            if(ring[i]->getType()!=0)
             {
-                cout<<"Inelul "<<i<<"|"<<ring[i].getNume()<<"\n";
+                cout<<"Inelul "<<i<<"|"<<ring[i]->getNume()<<"\n";
                 corp[++nr_corp].setCardinal(-1);
-                corp[nr_corp].setType(ring[i].getType());
-                corp[nr_corp].setNume(ring[i].getNume());
-                if(ring[i].getNume()=="Q")
+                corp[nr_corp].setType(ring[i]->getType());
+                corp[nr_corp].setNume(ring[i]->getNume());
+                if(ring[i]->getNume()=="Q")
                 {
                     rationalCorp.setCardinal(-1);
                     rationalCorp.setType(1);
-                    rationalCorp.setNume(ring[i].getNume());
+                    rationalCorp.setNume(ring[i]->getNume());
                 }
                 else
                 {
-                    if(ring[i].getNume()=="R")
+                    if(ring[i]->getNume()=="R")
                     {
                         realCorp.setCardinal(-1);
                         realCorp.setType(2);
-                        realCorp.setNume(ring[i].getNume());
+                        realCorp.setNume(ring[i]->getNume());
                     }
                     else
                     {
                         complexCorp.setCardinal(-1);
                         complexCorp.setType(2);
-                        complexCorp.setNume(ring[i].getNume());
+                        complexCorp.setNume(ring[i]->getNume());
                     }
                 }
 
             }
-            else if(ring[i].getType()==0 and ring[i].getNume().substr(0,2)=="Z/")
+            else if(ring[i]->getType()==0 and ring[i]->getNume().substr(0,2)=="Z/")
             {
-                cout<<"Inelul "<<i<<"|"<<ring[i].getNume()<<"\n";
+                cout<<"Inelul "<<i<<"|"<<ring[i]->getNume()<<"\n";
                 int **table1;
-                int card=ring[i].getCardinal();
+                int card=ring[i]->getCardinal();
                 table1 = new int*[card+1];
                 for(int i=1;i<=card;++i)
                 {
@@ -891,44 +1119,46 @@ void openFileInput()
                         table2[i][j]=((i-1)*(j-1))%card+1;
                     }
                 }
-                if(prim(ring[i].getCardinal())==1)
+                ring[i]->setCardinal(card);
+                ring[i]->setOpTable(table1,table2,card);
+                /*if(prim(ring[i]->getCardinal())==1)
                 {
-                    corp[++nr_corp].setNume(ring[i].getNume());
+                    corp[++nr_corp].setNume(ring[i]->getNume());
                     corp[nr_corp].setCardinal(card);
                     corp[nr_corp].setOpTable(table1,table2,card);
-                    znCorp[++nr_zn].setNume(ring[i].getNume());
+                    znCorp[++nr_zn].setNume(ring[i]->getNume());
                     znCorp[nr_zn].setCardinal(card);
                     znCorp[nr_zn].setOpTable(table1,table2,card);
-                }
+                }*/
             }
-            else if(ring[i].getType()==0 and ring[i].getNume().substr(0,2)!="Z/")
+            else if(ring[i]->getType()==0 and ring[i]->getNume().substr(0,2)!="Z/")
             {
-                ring[i].setType(0);
-                cout<<"Corp "<<ring[i].getNume();
-                //ring[i].printData();
-                if(ring[i].testCorp()==1)
+                ring[i]->setType(0);
+                cout<<"Corp "<<ring[i]->getNume();
+                //ring[i]->printData();
+                if(ring[i]->testCorp()==1)
                 {
                     cout<<"\n Da \n\n\n\n";
                     int card,type;
-                    card=ring[i].getCardinal();
+                    card=ring[i]->getCardinal();
                     int **table1;
                     table1 = new int*[card+1];
                     for(int i=1;i<=card;++i)
                     {
                         table1[i]=new int[card+1];
                     }
-                    ring[i].getMonoid1(card,type,table1);
+                    ring[i]->getMonoid1(card,type,table1);
                     int **table2;
                     table2 = new int*[card+1];
                     for(int i=1;i<=card;++i)
                     {
                         table2[i]=new int[card+1];
                     }
-                    ring[i].getMonoid2(table2);
+                    ring[i]->getMonoid2(table2);
 
                     string *elements=new string[card+1];
 
-                    ring[i].getElements(card,elements);
+                    ring[i]->getElements(card,elements);
 
                     for(int i=1;i<=card;++i)
                         cout<<elements[i]<<" ";
@@ -941,7 +1171,7 @@ void openFileInput()
                         cout<<"\n";
                     }*/
                     corp[++nr_corp].setCardinal(card);
-                    corp[nr_corp].setNume(ring[i].getNume());
+                    corp[nr_corp].setNume(ring[i]->getNume());
                     corp[nr_corp].setElements(elements,card);
                     corp[nr_corp].setOpTable(table1,table2,card);
                     corp[nr_corp].setType(0);
@@ -973,7 +1203,7 @@ void openFileInput()
             cout<<corp[i].getNume()<<" "<<corp[i].getCardinal()<<"\n";
         }
         int operation=0;
-        interogationMenu(operation,ring,nr_ring,corp,nr_corp,rationalCorp,complexCorp,realCorp,znCorp,nr_zn);
+        interogationMenu(operation,ring,nr_ring);
         delete[] corp;
         delete[] ring;
         delete[] znCorp;
@@ -1003,7 +1233,11 @@ void ConsoleInput()
         //cout<<"exists \n";
         int nr_ring;
         cin>>nr_ring;
-        Ring *ring=new Ring[nr_ring+1];
+        Ring *ring[nr_ring+1];
+        for(int i=1;i<=nr_ring;++i)
+            ring[i]=new Ring;
+
+
         Corp *corp=new Corp[nr_ring+1];
         RealGroup realCorp;
         RationalGroup rationalCorp;
@@ -1013,41 +1247,41 @@ void ConsoleInput()
         int nr_zn=0;
         for(int i=1;i<=nr_ring;++i)
         {
-            cin>>ring[i];
-            if(ring[i].getType()!=0)
+            cin>>*ring[i];
+            if(ring[i]->getType()!=0)
             {
-                cout<<"Inelul "<<i<<"|"<<ring[i].getNume()<<"\n";
+                cout<<"Inelul "<<i<<"|"<<ring[i]->getNume()<<"\n";
                 corp[++nr_corp].setCardinal(-1);
-                corp[nr_corp].setType(ring[i].getType());
-                corp[nr_corp].setNume(ring[i].getNume());
-                if(ring[i].getNume()=="Q")
+                corp[nr_corp].setType(ring[i]->getType());
+                corp[nr_corp].setNume(ring[i]->getNume());
+                if(ring[i]->getNume()=="Q")
                 {
                     rationalCorp.setCardinal(-1);
                     rationalCorp.setType(1);
-                    rationalCorp.setNume(ring[i].getNume());
+                    rationalCorp.setNume(ring[i]->getNume());
                 }
                 else
                 {
-                    if(ring[i].getNume()=="R")
+                    if(ring[i]->getNume()=="R")
                     {
                         realCorp.setCardinal(-1);
                         realCorp.setType(2);
-                        realCorp.setNume(ring[i].getNume());
+                        realCorp.setNume(ring[i]->getNume());
                     }
                     else
                     {
                         complexCorp.setCardinal(-1);
                         complexCorp.setType(2);
-                        complexCorp.setNume(ring[i].getNume());
+                        complexCorp.setNume(ring[i]->getNume());
                     }
                 }
 
             }
-            else if(ring[i].getType()==0 and ring[i].getNume().substr(0,2)=="Z/")
+            else if(ring[i]->getType()==0 and ring[i]->getNume().substr(0,2)=="Z/")
             {
-                cout<<"Inelul "<<i<<"|"<<ring[i].getNume()<<"\n";
+                cout<<"Inelul "<<i<<"|"<<ring[i]->getNume()<<"\n";
                 int **table1;
-                int card=ring[i].getCardinal();
+                int card=ring[i]->getCardinal();
                 table1 = new int*[card+1];
                 for(int i=1;i<=card;++i)
                 {
@@ -1067,44 +1301,44 @@ void ConsoleInput()
                         table2[i][j]=((i-1)*(j-1))%card+1;
                     }
                 }
-                if(prim(ring[i].getCardinal())==1)
+                if(prim(ring[i]->getCardinal())==1)
                 {
-                    corp[++nr_corp].setNume(ring[i].getNume());
+                    corp[++nr_corp].setNume(ring[i]->getNume());
                     corp[nr_corp].setCardinal(card);
                     corp[nr_corp].setOpTable(table1,table2,card);
-                    znCorp[++nr_zn].setNume(ring[i].getNume());
+                    znCorp[++nr_zn].setNume(ring[i]->getNume());
                     znCorp[nr_zn].setCardinal(card);
                     znCorp[nr_zn].setOpTable(table1,table2,card);
                 }
             }
-            else if(ring[i].getType()==0 and ring[i].getNume().substr(0,2)!="Z/")
+            else if(ring[i]->getType()==0 and ring[i]->getNume().substr(0,2)!="Z/")
             {
-                ring[i].setType(0);
-                cout<<"Corp "<<ring[i].getNume();
-                //ring[i].printData();
-                if(ring[i].testCorp()==1)
+                ring[i]->setType(0);
+                cout<<"Corp "<<ring[i]->getNume();
+                //ring[i]->printData();
+                if(ring[i]->testCorp()==1)
                 {
                     cout<<"\n Da \n\n\n\n";
                     int card,type;
-                    card=ring[i].getCardinal();
+                    card=ring[i]->getCardinal();
                     int **table1;
                     table1 = new int*[card+1];
                     for(int i=1;i<=card;++i)
                     {
                         table1[i]=new int[card+1];
                     }
-                    ring[i].getMonoid1(card,type,table1);
+                    ring[i]->getMonoid1(card,type,table1);
                     int **table2;
                     table2 = new int*[card+1];
                     for(int i=1;i<=card;++i)
                     {
                         table2[i]=new int[card+1];
                     }
-                    ring[i].getMonoid2(table2);
+                    ring[i]->getMonoid2(table2);
 
                     string *elements=new string[card+1];
 
-                    ring[i].getElements(card,elements);
+                    ring[i]->getElements(card,elements);
 
                     for(int i=1;i<=card;++i)
                         cout<<elements[i]<<" ";
@@ -1117,7 +1351,7 @@ void ConsoleInput()
                         cout<<"\n";
                     }*/
                     corp[++nr_corp].setCardinal(card);
-                    corp[nr_corp].setNume(ring[i].getNume());
+                    corp[nr_corp].setNume(ring[i]->getNume());
                     corp[nr_corp].setElements(elements,card);
                     corp[nr_corp].setOpTable(table1,table2,card);
                     corp[nr_corp].setType(0);
@@ -1149,7 +1383,7 @@ void ConsoleInput()
             cout<<corp[i].getNume()<<" "<<corp[i].getCardinal()<<"\n";
         }
         int operation=0;
-        interogationMenu(operation,ring,nr_ring,corp,nr_corp,rationalCorp,complexCorp,realCorp,znCorp,nr_zn);
+        interogationMenu(operation,ring,nr_ring);
     /*}
     else
     {
@@ -1181,7 +1415,6 @@ void tutorialInput(int optionSelected)
 
 int main()
 {
-    int optionSelected=0;
     //input_MenuChoice(optionSelected);
     /*int operation=0;
     interogationMenu(operation);
@@ -1195,12 +1428,13 @@ int main()
 
     corp1==corp2 si != izomorfism*/
 
-    Menu inputMenu;
+    int optionSelected=0;
+    Interface *interface=Interface::getInstance();
     string optiuni[]={"Prin fisier","Prin consola","How to input"};
-    inputMenu.getOptions(optiuni,3);
+    interface->getOptions(optiuni,3);
     int selectedOption=0;
-    inputMenu.showMenuChoice(selectedOption);
-
+    interface->showInterfaceChoice(selectedOption);
+    //amen
     switch (selectedOption)
             {
                 case 1: // Up arrow key

@@ -28,7 +28,7 @@ public:
             cout<<a<<"="<<b;
         }
     }
-    void additionOperation(int a,int b)
+    void additionOperation(double a,double b)
     {
         cout<<a+b;
     }
@@ -36,7 +36,7 @@ public:
     {
         cout<<(a-b);
     }
-    void multiplyOperation(int a,int b)
+    void multiplyOperation(double a,double b)
     {
         cout<<a*b;
     }
@@ -44,7 +44,7 @@ public:
     {
         cout<<(a/b);
     }
-    void inverseElement(int a)
+    void inverseElement(double a)
     {
         cout<<a*(-1)<<" and "<<1/a;
     }
@@ -55,6 +55,10 @@ public:
     void orderElement(double a)
     {
         cout<<"Nu avem ordine";
+    }
+    void TestCast()
+    {
+        cout<<"Real-corp";
     }
 };
 

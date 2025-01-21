@@ -131,4 +131,8 @@ public:
         }
         cout<<k<<" and "<<q;
     }
+    void TestCast()
+    {
+        cout<<"Z/n - corp\n";
+    }
 };

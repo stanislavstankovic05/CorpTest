@@ -69,6 +69,10 @@ public:
     {
         cout<<"Nu avem ordine";
     }
+    void TestCast()
+    {
+        cout<<"C - corp\n";
+    }
 };
 
 

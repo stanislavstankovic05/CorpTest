@@ -1,5 +1,7 @@
 #include <string>
+#include "StructuraAlgebrica.h"
 #include "monoid.h"
+#include "Group.h"
 using namespace std;
 
 /*map<string,Ring>M;
@@ -10,19 +12,6 @@ string s;
 cin>>s;
 Ring crt=M[s];*/
 
-int extractNumber(string &str)
-{
-    int number=0;
-    char s[str.length() + 1];
-    strcpy(s, str.c_str());
-    for(int i=2;s[i]!=0;++i)
-    {
-        if(isdigit(s[i])==1)
-            number=number*10+(s[i]-'0');
-    }
-    cout<<s<<" | "<<number<<" "<<typeid(number).name()<<"\n";
-    return number;
-}
 string intToString(int n)
 {
     string str;
@@ -32,13 +21,9 @@ string intToString(int n)
     return str;
 
 }
-class Ring
+class Ring:public StructuraAlgebrica
 {
-    string nume;
-    int cardinal;
-    int type=0;
-    Monoid monoid1;
-    Monoid monoid2;
+    Group group;
 public:
 
     Ring()
@@ -58,7 +43,7 @@ public:
     {
         //cout<<"destruct";
     }
-    void printData()
+    virtual void printData() override
     {
         cout<<nume<<"\n";
         monoid1.printData();
@@ -78,51 +63,18 @@ public:
         else
             return 0;
     }
-    string getNume() const {
-        return nume;
-    }
 
-    void setNume(const string& newNume) {
-        nume = newNume;
-    }
-
-    void getMonoid1(int card, int type, int **table)
+    bool test() override
     {
-        monoid1.getTable(table);
-    }
-
-    void setMonoid1(const Monoid& newMonoid1) {
-        monoid1 = newMonoid1;
-    }
-
-    void getMonoid2(int **table)
-    {
-        monoid2.getTable(table);
-    }
-
-    void setMonoid2(const Monoid& newMonoid2) {
-        monoid2 = newMonoid2;
-    }
-    int getCardinal()
-    {
-        return cardinal;
-    }
-    void setCardinal(const int& newcard) {
-        cardinal = newcard;
-    }
-    void setOpTable(int **table1,int **table2, int card)
-    {
-        monoid1.setTable(table1, card);
-        monoid2.setTable(table2, card);
-    }
-    void getElements(int &card, string *arrayElements)
-    {
-        monoid1.getElements(arrayElements);
-    }
-    void setElements(string *elements, int card)
-    {
-        monoid1.setElements(card,elements);
-        monoid2.setElements(card,elements);
+        if(getNume()=="C" || getNume()=="R" || getNume()=="Q" || (getNume().substr(0,2)=="Z/" && prim(cardinal)==1))
+           return 1;
+        else
+        {
+            if(testCorp()==1)
+                return 1;
+            else
+                return 0;
+        }
     }
     virtual string additionOperation(string a,string b)
     {
@@ -167,9 +119,12 @@ public:
         else
             cout<<"Sunt egale";
     }
-    void setType(int tip){type=tip;}
-    int getType(){return type;}
 
+    void setGroup()
+    {
+        Group g(monoid1);
+        group=g;
+    }
     friend istream& operator>>(istream& in, Ring& ring)
     {
 		in >> ring.nume;
@@ -222,7 +177,13 @@ public:
             ring.monoid2.setCardinal(ring.cardinal);
             in >> ring.monoid1;
             in >> ring.monoid2;
+            Group g(ring.monoid1);
+            ring.group=g;
         }
+	}
+	virtual void TestCast()
+	{
+	    cout<<getNume()<<" este Inel\n";
 	}
 };
 

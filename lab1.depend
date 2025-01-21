@@ -50,47 +50,62 @@
 1713496761 c:\users\stankovic\desktop\stan_david_florin_lab1 - copy\lab1\nrcomplex.h
 	<string>
 
-1713516718 source:c:\users\stankovic\desktop\stan_david_florin_lab2\lab1\main.cpp
+1716540149 source:c:\users\stankovic\desktop\stan_david_florin_lab2 (2)\stan_david_florin_lab2\lab1\main.cpp
 	<bits/stdc++.h>
 	<string>
 	<conio.h>
 	<typeinfo>
 	<sstream>
 	"ring.h"
-	"display.h"
+	"Interface.h"
 	"Corp.h"
 	"ZnCorp.h"
 	"RealCorp.h"
 	"RationalGroup.h"
 	"ComplexGroup.h"
+	"StructuraAlgebrica.h"
 
-1713496580 c:\users\stankovic\desktop\stan_david_florin_lab2\lab1\ring.h
+1716518568 c:\users\stankovic\desktop\stan_david_florin_lab2 (2)\stan_david_florin_lab2\lab1\ring.h
 	<string>
+	"StructuraAlgebrica.h"
 	"monoid.h"
+	"Group.h"
 
-1713496489 c:\users\stankovic\desktop\stan_david_florin_lab2\lab1\monoid.h
+1716509059 c:\users\stankovic\desktop\stan_david_florin_lab2 (2)\stan_david_florin_lab2\lab1\monoid.h
 	<iostream>
 	<string>
 
-1713492552 c:\users\stankovic\desktop\stan_david_florin_lab2\lab1\display.h
+1713492552 c:\users\stankovic\desktop\stan_david_florin_lab2 (2)\stan_david_florin_lab2\lab1\display.h
 	<conio.h>
 
-1713516233 c:\users\stankovic\desktop\stan_david_florin_lab2\lab1\corp.h
+1716540337 c:\users\stankovic\desktop\stan_david_florin_lab2 (2)\stan_david_florin_lab2\lab1\corp.h
 	<string>
 
-1713515966 c:\users\stankovic\desktop\stan_david_florin_lab2\lab1\zncorp.h
+1716518095 c:\users\stankovic\desktop\stan_david_florin_lab2 (2)\stan_david_florin_lab2\lab1\zncorp.h
 	<string>
 
-1713492946 c:\users\stankovic\desktop\stan_david_florin_lab2\lab1\realcorp.h
+1716512902 c:\users\stankovic\desktop\stan_david_florin_lab2 (2)\stan_david_florin_lab2\lab1\realcorp.h
 	<string>
 
-1713492948 c:\users\stankovic\desktop\stan_david_florin_lab2\lab1\rationalgroup.h
+1716512785 c:\users\stankovic\desktop\stan_david_florin_lab2 (2)\stan_david_florin_lab2\lab1\rationalgroup.h
 	<string>
 
-1713492945 c:\users\stankovic\desktop\stan_david_florin_lab2\lab1\complexgroup.h
+1716518097 c:\users\stankovic\desktop\stan_david_florin_lab2 (2)\stan_david_florin_lab2\lab1\complexgroup.h
 	<string>
 	"NrComplex.h"
 
-1713496761 c:\users\stankovic\desktop\stan_david_florin_lab2\lab1\nrcomplex.h
+1713496761 c:\users\stankovic\desktop\stan_david_florin_lab2 (2)\stan_david_florin_lab2\lab1\nrcomplex.h
 	<string>
+
+1716518595 c:\users\stankovic\desktop\stan_david_florin_lab2 (2)\stan_david_florin_lab2\lab1\structuraalgebrica.h
+	<string>
+	"monoid.h"
+
+1716508977 c:\users\stankovic\desktop\stan_david_florin_lab2 (2)\stan_david_florin_lab2\lab1\group.h
+	<iostream>
+	<string>
+	"monoid.h"
+
+1716518709 c:\users\stankovic\desktop\stan_david_florin_lab2 (2)\stan_david_florin_lab2\lab1\interface.h
+	<conio.h>
 

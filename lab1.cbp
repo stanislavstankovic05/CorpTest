@@ -43,9 +43,13 @@
 		<Unit filename="9.in" />
 		<Unit filename="ComplexGroup.h" />
 		<Unit filename="Corp.h" />
+		<Unit filename="Group.h" />
+		<Unit filename="Interface.h" />
 		<Unit filename="NrComplex.h" />
 		<Unit filename="RationalGroup.h" />
 		<Unit filename="RealCorp.h" />
+		<Unit filename="StructuraAlgebrica" />
+		<Unit filename="StructuraAlgebrica.h" />
 		<Unit filename="Untitled5" />
 		<Unit filename="Untitled6" />
 		<Unit filename="ZnCorp.h" />

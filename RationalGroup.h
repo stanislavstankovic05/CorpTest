@@ -1,3 +1,6 @@
+#ifndef RATIONAL_H_H
+#define RATIONAL_H_H
+
 #include <string>
 using namespace std;
 
@@ -56,6 +59,11 @@ public:
     {
         cout<<"Nu avem ordine";
     }
+    void TestCast()
+    {
+        cout<<"Q - corp\n";
+    }
 };
+#endif // RATIONAL_H_H
 
 

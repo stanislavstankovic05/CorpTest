@@ -1,3 +1,5 @@
+#ifndef MONOID_H_
+#define MONOID_H_
 #include <iostream>
 #include <string>
 using namespace std;
@@ -356,15 +358,16 @@ public:
                 table[i][j]=operationTable[i][j];
             }
         }
+        cout<<"oketable\n";
 
 	}
 	void setTable(int **table,int card)
 	{
-        for(int i=1;i<=cardinal;++i)
+        /*for(int i=1;i<=cardinal;++i)
         {
             delete[] operationTable[i];
         }
-        delete[] operationTable;
+        //delete[] operationTable;*/
 	    cardinal=card;
 	    operationTable=new int*[card+1];
         for(int i=1;i<=card;++i)
@@ -398,19 +401,20 @@ public:
 	}
     void setElements(int card, string *arrayElements)
     {
-        delete[] elements;
-        //cout<<"AVEM\n";
+        //delete[] elements;
+        cout<<"AVEM\n";
         elements = new string[card+1];
         //elements=arrayElements;
         for(int i=1;i<=card;++i)
         {
             elements[i]=arrayElements[i];
-            //cout<<elements[i]<<" si ";
+            cout<<elements[i]<<" si ";
         }
         //cout<<"\n";
 
     }
 };
+#endif
 
 
 
